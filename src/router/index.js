@@ -35,7 +35,7 @@ let routes = [
     path: '/admin',
     component: home,
     name: '管理员管理',
-    iconCls: 'el-icon-message', //图标样式class
+    iconCls: 'iconfont iconfont-admin', //图标样式class
     children: [
       {
         path: 'roleRights',
@@ -58,7 +58,7 @@ let routes = [
     path: '/menu2',
     component: home,
     name: '会员管理',
-    iconCls: 'el-icon-message',
+    iconCls: 'iconfont iconfont-huiyuan',
     children: [
       {
         path: 'sub1',
