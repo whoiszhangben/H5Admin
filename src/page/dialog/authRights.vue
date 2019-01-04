@@ -1,12 +1,13 @@
 <template>
-  <el-dialog title="角色授权" :visible="showAuthRightsVisible" width="30%" center :show-close="false">
+  <el-dialog :title="authTitle" :visible="showAuthRightsVisible" width="30%" center :show-close="false">
     <div>
       <el-tree
         :data="currentRoleRights"
+        :default-checked-keys="currentCheckedNode"
+        :default-expanded-keys="currentCheckedNode"
         :props="defaultProps"
         :show-checkbox="true"
-        node-key="MenuID"
-        :default-expand-all="true">
+        node-key="id">
       </el-tree>
     </div>
     <div slot="footer" class="dialog-footer">
@@ -17,59 +18,86 @@
 </template>
 
 <script>
+  import {mapGetters, mapActions} from 'vuex'
+  import * as types from "../../store/mutation-types";
   export default {
     props: {
       showAuthRightsDialog: {
         type: Boolean,
         default: false
+      },
+      roleID: {
+        type: Number,
+        default: 0
       }
     },
     data () {
       return {
         showAuthRightsVisible: false,
-        currentRoleRights: [{
-          id: 1,
-          label: '一级 1',
-          children: [{
-            id: 4,
-            label: '二级 1-1',
-            children: [{
-              id: 9,
-              label: '三级 1-1-1'
-            }, {
-              id: 10,
-              label: '三级 1-1-2'
-            }]
-          }]
-        }, {
-          id: 2,
-          label: '一级 2',
-          children: [{
-            id: 5,
-            label: '二级 2-1'
-          }, {
-            id: 6,
-            label: '二级 2-2'
-          }]
-        }, {
-          id: 3,
-          label: '一级 3',
-          children: [{
-            id: 7,
-            label: '二级 3-1'
-          }, {
-            id: 8,
-            label: '二级 3-2'
-          }]
-        }],
+        authTitle: '',
+        currentRoleRights: [],
+        currentCheckedNode: [],
         defaultProps: {
           children: 'children',
           label: 'label'
         }
       }
     },
+    created () {
+      if (this.getRoles.length === 0) {
+        this.fetchRoles();
+      }
+      if (this.getMenuRoles.length === 0) {
+        this.fetchMenuRoles();
+      }
+    },
+    computed: {
+      ...mapGetters({
+        getRoles: types.ROLE,
+        getMenuRoles: types.MENUROLE
+      })
+    },
+    methods: {
+      ...mapActions({
+        fetchRoles: types.ROLE,
+        fetchMenuRoles: types.MENUROLE
+      })
+    },
     watch: {
       showAuthRightsDialog: function () {
+        let currentRole = this.getRoles.find(item => {
+          return item.RoleID === this.roleID;
+        })
+        this.authTitle = '角色授权(' + currentRole.RoleName + ')'
+
+        let arr = [], checkedArr = [];
+        let topMenu = this.getMenuRoles.filter(item => {
+          return item.MenuLevel === 1 && item.ParentID === 0
+        })
+        topMenu.forEach(item => {
+          let subMenu = this.getMenuRoles.filter(subitem => {
+            return subitem.MenuLevel === 2 && subitem.ParentID === item.MenuID
+          })
+          let current = {
+            id: item.MenuID,
+            label: item.MenuName,
+            children: []
+          }
+          subMenu.forEach(item => {
+            if(item.RoleID) {
+              checkedArr.push(item.MenuID);
+            }
+            current.children.push({
+              id: item.MenuID,
+              label: item.MenuName
+            })
+          });
+          arr.push(current);
+        })
+        this.currentRoleRights = arr;
+        this.currentCheckedNode = checkedArr;
+        console.log(checkedArr);
+        console.log(this.currentCheckedNode);
         this.showAuthRightsVisible = true;
       }
     }

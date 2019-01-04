@@ -1,34 +1,21 @@
 <template>
   <div class="container-box">
-    <div class="form-box">
-      <el-row class="input-box" :gutter="20">
-        <el-col :span="6" class="input-label">
-          <el-col :span="6" class="label">角色名称：</el-col>
-          <el-col :span="12">
-            <el-input placeholder="请输入角色名称" size="mini" v-model="roleName"></el-input>
-          </el-col>
-          <el-col :span="6">
-            <el-button size="mini" class="el-button--primary" style="margin-left: 1em;" @click="addRole">新增角色</el-button>
-          </el-col>
-        </el-col>
-      </el-row>
-    </div>
     <el-table
       :header-cell-style="tableHeaderColor"
-      :data="this.getRoles"
+      :data="this.getAdminRoles"
       size="mini"
       border
       style="width: 100%"
     >
-      <el-table-column prop="RoleID" label="角色编号"></el-table-column>
+      <el-table-column prop="LoginAccount" label="登录账号"></el-table-column>
       <el-table-column prop="RoleName" label="角色名称"></el-table-column>
       <el-table-column label="操作">
         <template slot-scope="scope">
-          <el-button type="text" size="small" @click.prevent="authRoleRights(scope.row)">角色授权</el-button>
+          <el-button type="text" size="small" @click.prevent="modifyRole(scope.row)">修改角色</el-button>
         </template>
       </el-table-column>
     </el-table>
-    <auth-rights :show-auth-rights-dialog="showAuthRightsDialog" :roleID="currentRoleID"></auth-rights>
+    <modify-admin-role :showModifyAdminRoleDialog="showModifyAdminRoleDialog" :loginAccount="loginAccount"></modify-admin-role>
     <pagination
       @sendPageSize="receivePageSize"
       @sendCurrentPage="receiveCurrentPage"
@@ -39,34 +26,31 @@
 <script>
   import { mapGetters, mapActions } from "vuex";
   import pagination from "common/pagination";
-  import AuthRights from  '../dialog/authRights';
+  import ModifyAdminRole from  '../dialog/modifyAdminRole';
   import * as types from "../../store/mutation-types";
 
   export default {
     data() {
       return {
         totalPage: 300,
-        showAuthRightsDialog: false,
-        currentRoleID: 0,
-        value: "",
-        roleName: "",
-        DateValue: ""
+        showModifyAdminRoleDialog: false,
+        loginAccount: ''
       };
     },
     created () {
-      if (this.getRoles.length === 0) {
-        this.fetchRoles();
+      if (this.getAdminRoles.length === 0) {
+        this.fetchAdminRoles();
       }
-      this.totalPage = this.fetchRoles.length;
+      this.totalPage = this.getAdminRoles.length;
     },
     computed: {
       ...mapGetters({
-        getRoles: types.ROLE
+        getAdminRoles: types.ADMINROLE
       })
     },
     methods: {
       ...mapActions({
-        fetchRoles: types.ROLE
+        fetchAdminRoles: types.ADMINROLE
       }),
       receivePageSize(val) {
         console.log(val);
@@ -90,7 +74,7 @@
           return
         }
         if (this.getRoles.find(item => {
-          return item.RoleName === this.roleName.trim()
+            return item.RoleName === this.roleName.trim()
           })) {
           this.$alert('您输入的角色已存在,请重新输入');
           this.roleName = '';
@@ -102,6 +86,11 @@
           RoleName: this.roleName.trim()
         })
         this.$store.commit(types.ROLE, this.getRoles);
+      },
+      modifyRole (item) {
+        debugger
+        this.loginAccount = item.LoginAccount;
+        this.showModifyAdminRoleDialog = !this.showModifyAdminRoleDialog;
       }
     },
     watch: {
@@ -111,7 +100,7 @@
       }
     },
     components: {
-      AuthRights,
+      ModifyAdminRole,
       pagination
     }
   };

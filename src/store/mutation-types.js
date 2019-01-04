@@ -7,6 +7,6 @@ export const CUSTOMER = 'CUSTOMER';
 export const OPCENTER = 'OPCENTER';
 export const ROLE = 'ROLE';
 export const MENUROLE = 'MENUROLE';
-export const ADMIN = 'ADMIN';
+export const ADMININFO = 'ADMININFO';
 export const ADMINROLE = 'ADMINROLE';
 

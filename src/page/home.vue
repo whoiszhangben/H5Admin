@@ -216,7 +216,7 @@ export default {
         line-height: 50px;
         width: 100px;
         height: 50px;
-        letter-spacing: 5px;
+        letter-spacing: 1px;
       }
     }
     .logo-collapse-width {
