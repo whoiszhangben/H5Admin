@@ -23,16 +23,25 @@
         <el-form-item label="库存" class="el-form-item--mini">
           <el-input v-model="form.Inventory" class="el-input--small"></el-input>
         </el-form-item>
+        <el-form-item label="小图" class="el-form-item--mini">
+          <el-upload class="avatar-uploader" :class="{disabled: uploadDisabled}" :action="logoImageUploadUrl" list-type="picture-card" :file-list="imagelist" name="logoImage" :on-success="handleUploadSuccess" :on-remove="handleRemove" :on-preview="handlePictureCardPreview">
+            <i class="el-icon-plus"></i>
+          </el-upload>
+        </el-form-item>
+        <el-form-item label="中图" class="el-form-item--mini">
+          <img src="" alt="点击上传图片" />
+        </el-form-item>
+        <el-form-item label="大图" class="el-form-item--mini">
+          <img src="" alt="点击上传图片" />
+        </el-form-item>
+        <el-form-item label="商品规格" class="el-form-item--mini">
+          <img src="" alt="点击上传图片"/>
+        </el-form-item>
         <el-form-item label="商品描述" class="el-form-item--mini">
           <el-input type="textarea"
                     :rows="3"
                     class="el-input--small"
                     v-model="form.ProductDesc"></el-input>
-        </el-form-item>
-        <el-form-item label="商品规格" class="el-form-item--mini">
-          <el-input type="textarea"
-                    :rows="1"
-                    v-model="form.Specification"></el-input>
         </el-form-item>
         <el-form-item label="规格名称" class="el-form-item--mini">
           <el-input v-model="form.Specification" class="el-input--small"></el-input>
@@ -109,7 +118,10 @@
         showAddProductVisible: false,
         form: {
           type: ''
-        }
+        },
+        uploadDisabled: false,
+        logoImageUploadUrl: '',
+        imagelist: []
       }
     },
     created () {
@@ -124,7 +136,13 @@
       ...mapActions({
         fetchRoles: types.ROLE,
         fetchAdminRoles: types.ADMINROLE
-      })
+      }),
+      uploadImg () {
+
+      },
+      handleUploadSuccess () {},
+      handleRemove () {},
+      handlePictureCardPreview () {}
     },
     watch: {
       showAddPoductDialog: function () {
@@ -137,5 +155,8 @@
 <style scoped>
   .el-input, .el-textarea{
     width:calc(100% - 65px);
+  }
+  .disabled .el-upload--picture-card {
+    display: none;
   }
 </style>
